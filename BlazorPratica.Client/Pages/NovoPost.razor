@@ -1,0 +1,84 @@
+﻿@page "/novo-post"
+@using BlazorPratica.Client.Models
+@inject HttpClient Http
+@inject NavigationManager Nav
+
+
+<div>
+    <div>
+        <label>Seu Nome</label>
+        <input @bind="novoPost.AuthorName" placeholder="Como quer ser chamado?" />
+    </div>
+    <div>
+        <label>Título</label>
+        <input @bind="novoPost.Title" placeholder="Título do post" />
+    </div>
+    <div>
+        <label>Conteúdo</label>
+        <input @bind="novoPost.Content" placeholder="O que você quer compartilhar?" />
+    </div>
+
+    <div>
+        <label>Tag</label>
+        <select @bind="novoPost.Tag">
+            <option value="">Selecione...</option>
+            <option value="duvida">Dúvida</option>
+            <option value="conquista">Conquista</option>
+            <option value="dica">Dica</option>
+        </select> 
+    </div>
+
+
+    @if (!string.IsNullOrWhiteSpace(mensagemErro))
+    {
+        <p style="color: red;">@mensagemErro</p>
+    }
+
+
+    <button @onclick="EnviarPost" disabled="@carregando">
+        @(carregando ? "Publicando..." : "Publicar")
+    </button>
+
+</div>
+
+
+@code {
+    private Post novoPost = new();
+    private string mensagemErro = string.Empty;
+    private bool carregando = false;
+
+
+    private async Task EnviarPost()
+    {
+        if (string.IsNullOrWhiteSpace(novoPost.Title))
+        {
+            mensagemErro = "Título não pode estar vazio";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(novoPost.Content))
+        {
+            mensagemErro = "Conteúdo não pode ser vazio";
+        }
+
+        if (string.IsNullOrWhiteSpace(novoPost.Tag))
+        {
+            mensagemErro = "Conteúdo não pode ser vazio";
+        }
+
+        mensagemErro = string.Empty;
+        carregando = true;
+
+        var resposta = await Http.PostAsJsonAsync("api/posts", novoPost);
+
+        if (resposta.IsSuccessStatusCode)
+        {
+            Nav.NavigateTo("/");
+        }
+        else
+        {
+            mensagemErro = "Erro ao publicar. Tente novamente!";
+            carregando = false;
+        }
+    }
+}

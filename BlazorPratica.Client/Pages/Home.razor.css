@@ -1,0 +1,56 @@
+﻿.max-container {
+    padding: 25px;
+}
+
+.card {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    transition: all 0.3s ease-in-out;
+    border: 1px solid #ddd;
+    padding: 16px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+}
+
+    .card:hover {
+        transform: scale(1.01);
+    }
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    margin: 0;
+    background-color: black;
+    color: #fff;
+}
+
+
+    .header .button-navegar {
+        outline: none;
+        border: none;
+        border-radius: 10px;
+        padding: 10px;
+    }
+
+.empty-text {
+    min-height: 85vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.delete {
+    color: red;
+    font-size: 25px;
+    font-weight: bolder;
+    padding: 15px;
+    border-radius: 17px;
+    background-color: darkred;
+    align-self: flex-start;
+}
+
+    .delete:hover {
+        cursor: pointer;
+    }

@@ -1,38 +1,71 @@
 ﻿@page "/"
 @using BlazorPratica.Client.Models
 @inject HttpClient Http
+@inject NavigationManager navigationManager
 
-<h2>DevBoard</h2>
+<div class="header">
+    <h2>Comentários</h2>
+    <button @onclick="() => NavegarPost()" class="btn-primary button-navegar">Adicione um post</button>
+</div>
 
-@if (posts is null)
-{
-    <p>Carregando posts...</p>
-}
-else if (posts.Count == 0)
-{
-    <p>Nenhum post ainda. Seja o primeiro!</p>
-}
-else
-{
-    @foreach (var post in posts)
+
+<div class="max-container">
+    @if (posts is null)
     {
-        <div style="border: 1px solid #ddd; padding: 16px; margin-bottom: 12px; border-radius: 8px;">
-            <span>@post.Tag</span>
-            <h3>@post.Title</h3>
-            <p>@post.Content</p>
-            <small>por @post.AuthorName em @post.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</small>
+        <div class="empty-text">
+            <p>Carregando posts...</p>
         </div>
     }
-}
+    else if (posts.Count == 0)
+    {
+        <div class="empty-text">
+            <p style="font-size: 25px;">Nenhum post ainda. Seja o primeiro!</p>
+        </div>
+    }
+    else
+    {
+        @foreach (var post in posts)
+        {
+            <div class="card" style="">
+                <div>
+                    <span>@post.Tag</span>
+                    <h3>@post.Title</h3>
+                    <p>@post.Content</p>
+                    <small>por @post.AuthorName em @post.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</small>          
+                </div>
+                <div @onclick="() => DeletarMensagem(post.Id)" class="delete">X</div>
+            </div>
+        }
+    }
 
+</div>
 
 @code {
     private List<Post>? posts;
 
     // quando o componente é iniciado
-
     protected override async Task OnInitializedAsync()
     {
+        await GetDataFromApi();
+    }
+
+    private async Task GetDataFromApi()
+    {
         posts = await Http.GetFromJsonAsync<List<Post>>("api/Posts");
+    }
+
+    private async Task DeletarMensagem(int id)
+    {
+        var response = await Http.DeleteAsync($"api/posts/{id}");
+
+        if (response.IsSuccessStatusCode)
+        {
+            await GetDataFromApi();
+        }
+    }
+
+    private void NavegarPost()
+    {
+        navigationManager.NavigateTo("/novo-post");
     }
 }
