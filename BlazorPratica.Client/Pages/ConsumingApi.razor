@@ -1,0 +1,54 @@
+﻿@page "/posts-publicos"
+@using System.Text.Json.Serialization
+@inject IHttpClientFactory ClientFactory
+
+<h2>Posts Públicos</h2>
+
+
+
+@if (posts is null)
+{
+    <p>Carregando...</p>
+}
+else if (posts.Count == 0)
+{
+    <p>Nenhum post encontrado.</p>
+}
+else
+{
+    <h3>Quantidade de itens que vieram: @quantidadeTotalItens</h3>
+
+    @foreach (var post in posts)
+    {
+        <div style="border: 1px solid #ddd; padding: 16px; margin-bottom: 12px; border-radius: 8px;">
+            <h1>@post.Id</h1>
+            <h3>@post.Title</h3>
+            <p>@post.Body</p>
+            <small>Usuário #@post.AuthorId</small>
+        </div>
+    }
+}
+
+@code {
+    private List<PostPublico>? posts;
+
+    private int quantidadeTotalItens = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var client = ClientFactory.CreateClient("JsonPlaceholder");
+        posts = await client.GetFromJsonAsync<List<PostPublico>>("posts");
+        quantidadeTotalItens = posts.Count;
+    }
+
+    public class PostPublico
+    {
+        public int Id { get; set; }
+
+        [JsonPropertyName("userId")]
+        public int AuthorId { get; set; }
+
+        public string Title { get; set; } = string.Empty;
+        public string Body { get; set; } = string.Empty;
+    }
+}
